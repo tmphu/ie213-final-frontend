@@ -1,0 +1,27 @@
+/* react slick */
+.slick-prev {
+    left: -2% !important;
+    z-index: 1;
+    background-color: rgb(224,231,255) !important;
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 50%;
+    box-shadow: rgba(99,102,241, 0.5) 0px 8px 24px;
+    transition: all .5s;
+  }
+  .slick-prev:hover {
+    background-color: rgb(135,162,255) !important;
+  }
+  .slick-next {
+    right: -2% !important;
+    z-index: 1;
+    background-color: rgb(224,231,255) !important;
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 50%;
+    box-shadow: rgba(99,102,241, 0.5) 0px 8px 24px;
+    transition: all .5s;
+  }
+  .slick-next:hover {
+    background-color: rgb(135,162,255) !important;
+  }
