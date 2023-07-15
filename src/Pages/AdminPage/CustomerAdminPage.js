@@ -2,23 +2,25 @@ import { Button, Input, message, Space, Table, Tag } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import React, { useEffect, useRef, useState } from "react";
-import { userAdminService } from "../../services/admin/userAdminService";
+import { customerAdminService } from "../../services/admin/customerAdminService";
 import { setLoadingOff } from "../../redux/reducers/loadingReducer";
 import { store } from "../..";
 import UserAdminModal from "../../Component/Modal/UserAdminModal";
+import { useSelector } from 'react-redux';
 
-export default function UserAdminPage() {
-  const [userArr, setUserArr] = useState([]);
+export default function CustomerAdminPage() {
+  let userInfo = useSelector((state) => state.userReducer.userInfo);
+  const [customerArr, setCustomerArr] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRow, setTotalRow] = useState(1);
 
   useEffect(() => {
-    let handleDeleteUser = (userId) => {
-      userAdminService
-        .deleteUser(userId)
+    let handleDeleteCustomer = (customerId) => {
+      customerAdminService
+        .deleteUser(customerId)
         .then((res) => {
-          message.success("Xóa người dùng thành công!");
-          fetchUserList();
+          message.success("Xóa khách hàng thành công!");
+          fetchCustomerList();
         })
         .catch((err) => {
           store.dispatch(setLoadingOff());
@@ -26,42 +28,45 @@ export default function UserAdminPage() {
         });
     };
 
-    let fetchUserList = () => {
-      userAdminService
-        .getUserPagination(currentPage)
+    let fetchCustomerList = () => {
+      customerAdminService
+        .getCustomerPagination(currentPage)
         .then((res) => {
-          setUserArr(res.data.content.data);
-          setTotalRow(res.data.content.totalRow);
-          let userList = res.data.content.data.map((item, index) => {
+          console.log('res', res);
+          setCustomerArr(res.data.content.data);
+          setTotalRow(res.data.content.totalCount);
+          let customerList = res.data.content.data.map((item, index) => {
             return {
               ...item,
               key: index,
               action: (
                 <>
-                  <button
-                    onClick={() => {
-                      handleDeleteUser(item.id);
-                    }}
-                    className="mx-1 px-2 py-1 rounded bg-red-700 text-white"
-                  >
-                    Xóa
-                  </button>
+                  {userInfo.user.role === "ADMIN" ? (
+                    <button
+                      onClick={() => {
+                        handleDeleteCustomer(item.id);
+                      }}
+                      className="mx-1 px-2 py-1 rounded bg-red-700 text-white"
+                    >
+                      Xóa
+                    </button>
+                  ): null}
                   <UserAdminModal
                     userId={item.id}
-                    fetchUserList={fetchUserList}
+                    fetchCustomerList={fetchCustomerList}
                     action={"edit"}
                   />
                 </>
               ),
             };
           });
-          setUserArr(userList);
+          setCustomerArr(customerList);
         })
         .catch((err) => {
-          console.log("getUserList: ", err);
+          console.log("getCustomerList: ", err);
         });
     };
-    fetchUserList();
+    fetchCustomerList();
   }, [currentPage]);
 
   // Table with Search
@@ -183,24 +188,36 @@ export default function UserAdminPage() {
       ),
   });
 
-  const columnsUser = [
+  const columnsCustomer = [
     {
       title: "ID",
-      dataIndex: "id",
-      key: "id",
-      ...getColumnSearchProps("id"),
+      dataIndex: "customer_id",
+      key: "customer_id",
+      ...getColumnSearchProps("customer_id"),
     },
     {
-      title: "Họ Tên",
-      dataIndex: "name",
-      key: "name",
-      ...getColumnSearchProps("name"),
+      title: "Họ",
+      dataIndex: "last_name",
+      key: "last_name",
+      ...getColumnSearchProps("last_name"),
+    },
+    {
+      title: "Tên",
+      dataIndex: "first_name",
+      key: "first_name",
+      ...getColumnSearchProps("first_name"),
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
       ...getColumnSearchProps("email"),
+    },
+    {
+      title: "Phone",
+      dataIndex: "phone_number",
+      key: "phone_number",
+      ...getColumnSearchProps("phone_number"),
     },
     {
       title: "Loại Khách",
@@ -224,10 +241,10 @@ export default function UserAdminPage() {
 
   return (
     <div>
-      <UserAdminModal userId={null} action={"add"} />
+      {userInfo.user.role === "ADMIN" ? (<UserAdminModal userId={null} action={"add"} />) : null}
       <Table
-        columns={columnsUser}
-        dataSource={userArr}
+        columns={columnsCustomer}
+        dataSource={customerArr}
         pagination={{
           current: currentPage,
           onChange: (page) => setCurrentPage(page),

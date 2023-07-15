@@ -8,7 +8,7 @@ import NotFoundPage from "./Pages/NotFoundPage/NotFoundPage";
 import Loading from "./Pages/Loading/Loading";
 import LocationPage from "./Pages/LocationPage/LocationPage";
 import MyProfile from "./Pages/MyProfile/MyProfile";
-import UserAdminPage from "./Pages/AdminPage/UserAdminPage";
+import CustomerAdminPage from "./Pages/AdminPage/CustomerAdminPage";
 import AdminLayout from "./HOC/AdminLayout/AdminLayout";
 import LocationAdminPage from "./Pages/AdminPage/LocationAdminPage";
 import HouseAdminPage from "./Pages/AdminPage/HouseAdminPage";
@@ -27,7 +27,7 @@ function App() {
           <Route path="/house/details/:id" element={<Layout><DetailPage /></Layout>} />
           <Route path="/my-profile" element={<Layout><MyProfile /></Layout>} />
           <Route path="/admin">
-            <Route path="user" element={<AdminLayout><UserAdminPage /></AdminLayout>} />
+            <Route path="customer" element={<AdminLayout><CustomerAdminPage /></AdminLayout>} />
             <Route path="location" element={<AdminLayout><LocationAdminPage /></AdminLayout>} />
             <Route path="house" element={<AdminLayout><HouseAdminPage /></AdminLayout>} />
             <Route path="booking" element={<AdminLayout><BookingAdminPage /></AdminLayout>} />

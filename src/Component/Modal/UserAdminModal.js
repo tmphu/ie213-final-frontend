@@ -1,13 +1,13 @@
 import { Button, Modal, Form, Input, message } from "antd";
 import { useEffect, useState } from "react";
-import { userAdminService } from "../../services/admin/userAdminService";
+import { customerAdminService } from "../../services/admin/customerAdminService";
 import "./UserAdminModal.css";
 
 const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
   const [userData, setUserData] = useState({});
   useEffect(() => {
     if (userId) {
-      userAdminService
+      customerAdminService
         .getUserById(userId)
         .then((res) => {
           setUserData(res.data.content);
@@ -28,7 +28,7 @@ const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
   // handle submit
   const onSubmit = (values) => {
     if (userId) {
-      userAdminService
+      customerAdminService
         .editUser(values)
         .then((res) => {
           message.success("Sửa thông tin người dùng thành công!");
@@ -40,7 +40,7 @@ const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
           message.error("Có lỗi xảy ra!");
         });
     } else {
-      userAdminService
+      customerAdminService
         .addUser(values)
         .then((res) => {
           message.success("Thêm người dùng thành công!");

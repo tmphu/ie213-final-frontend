@@ -20,6 +20,7 @@ import "./DetailPage.css";
 import { addDays } from "date-fns";
 import { message } from "antd";
 import { currencyFormat } from '../../helper/currency';
+import moment from 'moment';
 
 export default function DetailPage() {
   let userInfo = useSelector((state) => state.userReducer.userInfo);
@@ -65,21 +66,23 @@ export default function DetailPage() {
   }
 
   const bookHouse = (startDate, endDate, guestNo, userId) => {
+    console.log('userInfo', userInfo);
     const data = {
-      maPhong: parseInt(id),
-      ngayDen: startDate,
-      ngayDi: endDate,
-      soLuongKhach: guestNo,
-      maNguoiDung: userId,
+      house_id: parseInt(id),
+      check_in_date: moment(startDate).format('YYYY-MM-DD'),
+      check_out_date: moment(endDate).format('YYYY-MM-DD'),
+      guest_number: guestNo,
+      user_id: userId,
     };
-    // console.log("bookHouse data", data);
+    console.log("bookHouse data", data);
 
     houseService
       .bookHouse(data)
       .then((res) => {
-        setTimeout(() => {
-          navigate("/my-profile");
-        }, 1000);
+        // setTimeout(() => {
+        //   navigate("/my-profile");
+        // }, 1000);
+        console.log('res', res);
       })
       .catch((err) => {
         console.log("bookHouse error", err);
@@ -197,9 +200,7 @@ export default function DetailPage() {
             <div className="container p-6 py-4 mb-12">
               <div className="flex flex-row justify-between py-3">
                 <p className="text-lg">
-                  <span className="text-xl font-bold">{currencyFormat.format(house.price)}</span> /
-                  đêm
-                </p>
+                  <span className="text-xl font-bold">{currencyFormat.format(house.price)}</span> / đêm</p>
                 <p>
                   <span className="text-pink-500 pr-1">
                     <FontAwesomeIcon icon={faStar} />

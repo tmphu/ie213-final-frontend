@@ -12,8 +12,8 @@ export const createConfig = () => {
 
 export const https = axios.create({
   baseURL: BASE_URL,
-  timeout: 5000,
-  // headers: createConfig(),
+  timeout: 30000,
+  headers: createConfig(),
 });
 
 https.interceptors.request.use(

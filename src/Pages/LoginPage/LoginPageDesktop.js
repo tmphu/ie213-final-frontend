@@ -19,8 +19,8 @@ export default function LoginPageDesktop() {
         message.success("Đăng nhập thành công!");
         userLocalService.setItem(res.data.content);
         setTimeout(() => {
-          if (res.data.content.user?.role === "HOST") {
-            navigate("/admin/user");
+          if (res.data.content.user?.role === "HOST" || res.data.content.user?.role === "ADMIN") {
+            navigate("/admin/customer");
           } else {
             navigate("/");
           }

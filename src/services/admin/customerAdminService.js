@@ -1,16 +1,19 @@
 import { https } from "../configURL";
 
-export const userAdminService = {
+export const customerAdminService = {
+  getCustomerPagination: (currentPage = 1, pageSize = 10) => {
+    return https.get(
+      `/api/v1/customer/?pageSize=${pageSize}&currentPage=${currentPage}`
+    );
+  },
+
+
+  
   addUser: (user) => {
     return https.post("api/users", user);
   },
   getUserList: () => {
     return https.get("api/users");
-  },
-  getUserPagination: (currentPage) => {
-    return https.get(
-      `api/users/phan-trang-tim-kiem?pageIndex=${currentPage}&pageSize=10`
-    );
   },
   getUserById: (userId) => {
     return https.get(`api/users/${userId}`);

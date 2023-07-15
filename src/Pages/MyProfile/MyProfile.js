@@ -10,38 +10,22 @@ import UserAdminModal from "../../Component/Modal/UserAdminModal";
 export default function MyProfile() {
   let userInfo = useSelector((state) => state.userReducer.userInfo);
   const [bookedHouseArr, setBookedHouseArr] = React.useState([]);
-  const [houseArrComponent, setHouseArrComponent] = React.useState([]);
 
   useEffect(() => {
     houseService
       .getBookedHouse(userInfo.user.id)
       .then((res) => {
-        setBookedHouseArr(res.data.content);
+        console.log('bookedHouse', res);
+        const bookedHouse = res.data?.content?.map((item) => {
+          return item.house;
+        });
+        console.log('bookedHouse arr', bookedHouse);
+        setBookedHouseArr(bookedHouse);
       })
       .catch((err) => {
         console.log("getBookedHouse err: ", err);
       });
   }, [userInfo.user.id]);
-
-  useEffect(() => {
-    let getHouseInfo = (id) =>
-      houseService
-        .getHouseById(id)
-        .then((res) => {
-          return res.data.content;
-        })
-        .catch((err) => {
-          console.log("getHouseById err: ", err);
-        });
-
-    bookedHouseArr.forEach(async (item, index) => {
-      const houseInfo = await getHouseInfo(item.maPhong);
-      setHouseArrComponent((prevHouseArrComponent) => [
-        ...prevHouseArrComponent,
-        houseInfo,
-      ]);
-    });
-  }, [bookedHouseArr]);
 
   return (
     <div className="profile__page flex lg:flex-row flex-col container mx-auto m-10">
@@ -78,7 +62,7 @@ export default function MyProfile() {
           <UserAdminModal userId={userInfo.user.id} isSelfEdit={true} />
           <h3 className="font-bold text-3xl pt-10">Phòng đã thuê</h3>
           {bookedHouseArr.length !== 0 ? (
-            <HouseList houseArr={houseArrComponent} />
+            <HouseList houseArr={bookedHouseArr} />
           ) : (
             <p>Chưa có phòng thuê nào!</p>
           )}

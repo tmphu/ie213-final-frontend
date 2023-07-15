@@ -38,7 +38,7 @@ const AdminLayout = ({ children }) => {
   const handleMenuClick = (key) => {
     switch (key) {
       case "1":
-        navigate("/admin/user");
+        navigate("/admin/customer");
         break;
       case "2":
         navigate("/admin/location");
@@ -67,7 +67,7 @@ const AdminLayout = ({ children }) => {
             {
               key: "1",
               icon: <UserOutlined />,
-              label: "Người dùng",
+              label: "Khách hàng",
             },
             {
               key: "2",
