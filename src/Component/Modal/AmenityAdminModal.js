@@ -1,23 +1,25 @@
 import { Button, Modal, Form, Input, message } from "antd";
 import { useEffect, useState } from "react";
 import "../../assets/uitbooking-styles.css";
-import { locationService } from "../../services/locationService";
+import axios from "axios";
+import { BASE_URL } from "../../services/configURL";
 import { userLocalService } from "../../services/localStorageService";
+import { amenityService } from '../../services/admin/amenityService';
 
-const LocationAdminModal = ({ locationId, fetchLocationList, action }) => {
-  const [locationData, setLocationData] = useState({});
+const AmenityAdminModal = ({ amenityId, fetchAmenityList, action }) => {
+  const [amenityData, setAmenityData] = useState({});
   useEffect(() => {
-    if (locationId) {
-      locationService
-        .getLocationById(locationId)
+    if (amenityId) {
+      amenityService
+        .getAmenityById(amenityId)
         .then((res) => {
-          setLocationData(res.data.content);
+          setAmenityData(res.data.content);
         })
         .catch((err) => {
-          console.log("getLocationById err", err);
+          console.log("getAmenityById err", err);
         });
     }
-  }, [locationId]);
+  }, [amenityId]);
 
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
@@ -27,28 +29,28 @@ const LocationAdminModal = ({ locationId, fetchLocationList, action }) => {
 
   // handle submit
   const onSubmit = (values) => {
-    if (locationId) {
-      locationService
-        .updateLocation(values)
+    if (amenityId) {
+      amenityService
+        .updateAmenity(values)
         .then((res) => {
-          message.success("Sửa thông tin địa điểm thành công!");
+          message.success("Sửa thông tin tiện nghi thành công!");
           handleClose();
-          fetchLocationList();
+          fetchAmenityList();
         })
         .catch((err) => {
-          console.log("updateLocation err", err);
+          console.log("updateAmenity err", err);
           message.error("Có lỗi xảy ra!");
         });
     } else {
-      locationService
-        .addLocation(values)
+      amenityService
+        .addAmenity(values)
         .then((res) => {
-          message.success("Thêm địa điểm thành công!");
+          message.success("Thêm tiện nghi thành công!");
           handleClose();
           window.location.reload();
         })
         .catch((err) => {
-          console.log("addLocation err", err);
+          console.log("addAmenity err", err);
           message.error(err.response.data.content);
         });
     }
@@ -60,10 +62,10 @@ const LocationAdminModal = ({ locationId, fetchLocationList, action }) => {
         onClick={() => setOpen(true)}
         className="mx-1 px-2 py-1 rounded bg-orange-500 text-white"
       >
-        {action === "edit" ? "Sửa" : "Thêm địa điểm"}
+        {action === "edit" ? "Sửa" : "Thêm tiện nghi"}
       </button>
       <Modal
-        title={locationId ? "Sửa thông tin địa điểm" : "Thêm địa điểm"}
+        title={amenityId ? "Sửa thông tin tiện nghi" : "Thêm tiện nghi"}
         open={open}
         onCancel={handleClose}
         footer={[
@@ -77,11 +79,11 @@ const LocationAdminModal = ({ locationId, fetchLocationList, action }) => {
               form
                 .validateFields()
                 .then((values) => {
-                  values = locationId ? { ...values, id: locationData?.id } : { ...values };
+                  values = amenityId ? { ...values, id: amenityData?.id } : { ...values };
                   onSubmit(values);
                 })
                 .catch((info) => {
-                  console.log("Validate Failed:", info);
+                  console.log("Failed validation:", info);
                 });
             }}
           >
@@ -94,37 +96,33 @@ const LocationAdminModal = ({ locationId, fetchLocationList, action }) => {
           layout="vertical"
           name="form_in_modal"
           initialValues={{
-            location: locationData.location,
-            city: locationData.city,
-            image: locationData.image,
+            code: amenityData.code,
+            name: amenityData.name,
           }}
         >
           <Form.Item
-            label="Tên địa điểm"
-            name="location"
+            label="Mã code"
+            name="code"
             rules={[
               {
                 required: true,
-                message: "Tên không được để trống!",
+                message: "Mã code không được để trống!",
               },
             ]}
           >
-            <Input placeholder='Tên địa điểm'/>
+            <Input placeholder='ma_code'/>
           </Form.Item>
           <Form.Item
-            label="Tỉnh thành"
-            name="city"
+            label="Tên tiện nghi"
+            name="name"
             rules={[
               {
                 required: true,
-                message: "Tỉnh thành không được để trống!",
+                message: "Tên tiện nghi không được để trống!",
               },
             ]}
           >
-            <Input placeholder='Tỉnh thành'/>
-          </Form.Item>
-          <Form.Item label="Hình ảnh" name="image">
-            <Input placeholder='Đường link hình ảnh'/>
+            <Input placeholder='Tên tiện nghi'/>
           </Form.Item>
         </Form>
       </Modal>
@@ -132,4 +130,4 @@ const LocationAdminModal = ({ locationId, fetchLocationList, action }) => {
   );
 };
 
-export default LocationAdminModal;
+export default AmenityAdminModal;

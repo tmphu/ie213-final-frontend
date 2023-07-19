@@ -6,7 +6,12 @@ export const customerAdminService = {
       `/api/v1/customer/?pageSize=${pageSize}&currentPage=${currentPage}`
     );
   },
-
+  getCustomerById: (customerId) => {
+    return https.get(`/api/v1/customer/${customerId}`);
+  },
+  updateCustomer: (customer) => {
+    return https.put(`/api/v1/customer/${customer.id}`, customer);
+  },
 
   
   addUser: (user) => {
@@ -14,12 +19,6 @@ export const customerAdminService = {
   },
   getUserList: () => {
     return https.get("api/users");
-  },
-  getUserById: (userId) => {
-    return https.get(`api/users/${userId}`);
-  },
-  editUser: (user) => {
-    return https.put(`api/users/${user.id}`, user);
   },
   deleteUser: (userId) => {
     return https.delete(`api/users?id=${userId}`);

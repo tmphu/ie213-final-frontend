@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import HouseList from "./HouseList/HouseList";
 import { houseService } from "../../services/houseService";
 import ProfilePhoto from "./ProfilePhoto";
-import UserAdminModal from "../../Component/Modal/UserAdminModal";
+import UserAdminModal from "../../Component/Modal/CustomerAdminModal";
 
 export default function MyProfile() {
   let userInfo = useSelector((state) => state.userReducer.userInfo);

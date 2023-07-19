@@ -13,6 +13,7 @@ import AdminLayout from "./HOC/AdminLayout/AdminLayout";
 import LocationAdminPage from "./Pages/AdminPage/LocationAdminPage";
 import HouseAdminPage from "./Pages/AdminPage/HouseAdminPage";
 import BookingAdminPage from "./Pages/AdminPage/BookingAdminPage";
+import AmenityAdminPage from './Pages/AdminPage/AmenityAdminPage';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/admin">
             <Route path="customer" element={<AdminLayout><CustomerAdminPage /></AdminLayout>} />
             <Route path="location" element={<AdminLayout><LocationAdminPage /></AdminLayout>} />
+            <Route path="amenity" element={<AdminLayout><AmenityAdminPage /></AdminLayout>} />
             <Route path="house" element={<AdminLayout><HouseAdminPage /></AdminLayout>} />
             <Route path="booking" element={<AdminLayout><BookingAdminPage /></AdminLayout>} />
           </Route>

@@ -6,52 +6,38 @@ import { setLoadingOff } from "../../redux/reducers/loadingReducer";
 import { store } from "../..";
 import { locationService } from "../../services/locationService";
 import LocationAdminModal from "../../Component/Modal/LocationAdminModal";
+import { useSelector } from 'react-redux';
 
 export default function LocationAdminPage() {
+  let userInfo = useSelector((state) => state.userReducer.userInfo);
   const [locationArr, setLocationArr] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalRow, setTotalRow] = useState(1);
+  const [totalCount, setTotalCount] = useState(1);
 
   useEffect(() => {
-    let handleDeleteLocation = (locationId) => {
-      locationService
-        .deleteLocation(locationId)
-        .then((res) => {
-          message.success("Xóa vị trí thành công!");
-          fetchLocationList();
-        })
-        .catch((err) => {
-          store.dispatch(setLoadingOff());
-          message.error(err.response.data.content);
-        });
-    };
-
     let fetchLocationList = () => {
       locationService
-        .getCityPagination(currentPage) // getLocation
+        .getLocation(currentPage) // getLocation
         .then((res) => {
+          console.log('res', res);
           setLocationArr(res.data.content.data);
-          setTotalRow(res.data.content.totalRow);
+          setTotalCount(res.data.content.totalCount);
           let locationList = res.data.content.data.map((item, index) => {
             return {
               ...item,
               key: index,
-              hinhAnh: <img src={item.hinhAnh} alt="" className="h-10" />,
+              image: <img src={item.image} alt="" className="h-10" />,
               action: (
                 <>
-                  <button
-                    onClick={() => {
-                      handleDeleteLocation(item.id);
-                    }}
-                    className="mx-1 px-2 py-1 rounded bg-red-700 text-white"
-                  >
-                    Xóa
-                  </button>
+                {userInfo.user.role === "ADMIN" ? (
+                  <>
                   <LocationAdminModal
                     locationId={item.id}
                     fetchLocationList={fetchLocationList}
                     action={"edit"}
                   />
+                  </>
+                ) : null}
                 </>
               ),
             };
@@ -193,27 +179,21 @@ export default function LocationAdminPage() {
       ...getColumnSearchProps("id"),
     },
     {
-      title: "Tên Vị Trí",
-      dataIndex: "tenViTri",
-      key: "tenViTri",
-      ...getColumnSearchProps("tenViTri"),
+      title: "Tên địa điểm",
+      dataIndex: "location",
+      key: "location",
+      ...getColumnSearchProps("location"),
     },
     {
       title: "Tỉnh Thành",
-      dataIndex: "tinhThanh",
-      key: "tinhThanh",
-      ...getColumnSearchProps("tinhThanh"),
-    },
-    {
-      title: "Quốc Gia",
-      dataIndex: "quocGia",
-      key: "quocGia",
-      ...getColumnSearchProps("quocGia"),
+      dataIndex: "city",
+      key: "city",
+      ...getColumnSearchProps("city"),
     },
     {
       title: "Hình Ảnh",
-      dataIndex: "hinhAnh",
-      key: "hinhAnh",
+      dataIndex: "image",
+      key: "image",
     },
     {
       title: "Điều chỉnh",
@@ -224,7 +204,7 @@ export default function LocationAdminPage() {
 
   return (
     <div>
-      <LocationAdminModal locationId={null} action={"add"} />
+      {(userInfo.user.role === "ADMIN") ? <LocationAdminModal locationId={null} action={"add"} /> : null}
       <Table
         columns={columnsLocation}
         dataSource={locationArr}
@@ -232,7 +212,7 @@ export default function LocationAdminPage() {
           current: currentPage,
           onChange: (page) => setCurrentPage(page),
           pageSize: 10,
-          total: totalRow,
+          total: totalCount,
         }}
       ></Table>
     </div>

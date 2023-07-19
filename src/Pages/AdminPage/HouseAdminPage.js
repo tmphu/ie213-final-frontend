@@ -6,11 +6,14 @@ import { setLoadingOff } from "../../redux/reducers/loadingReducer";
 import { store } from "../..";
 import HouseAdminModal from "../../Component/Modal/HouseAdminModal";
 import { houseService } from "../../services/houseService";
+import { currencyFormat } from '../../helper/currency';
+import { useSelector } from 'react-redux';
 
 export default function HouseAdminPage() {
+  let userInfo = useSelector((state) => state.userReducer.userInfo);
   const [houseArr, setHouseArr] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalRow, setTotalRow] = useState(1);
+  const [totalCount, setTotalCount] = useState(1);
 
   useEffect(() => {
     let handleDeleteHouse = (houseId) => {
@@ -26,33 +29,30 @@ export default function HouseAdminPage() {
         });
     };
 
-    let fetchHouseList = () => {
+    let fetchHouseList = (hostId) => {
       houseService
-        .getHousePagination(currentPage)
+        .getHousePagination(hostId, currentPage)
         .then((res) => {
-          setHouseArr(res.data.content.data);
-          setTotalRow(res.data.content.totalRow);
+          setTotalCount(res.data.content.totalCount);
           let houseList = res.data.content.data.map((item, index) => {
             return {
               ...item,
               key: index,
-              hinhAnh: <img src={item.hinhAnh} alt="" className="h-10" />,
-              giaTien: <span>${item.giaTien}</span>,
+              location: item.location.location,
+              image: <img src={item.HouseImage[0].image} alt="" className="h-10" />,
+              price: <span>{currencyFormat.format(item.price)}</span>,
               action: (
                 <>
-                  <button
-                    onClick={() => {
-                      handleDeleteHouse(item.id);
-                    }}
-                    className="mx-1 px-2 py-1 rounded bg-red-700 text-white"
-                  >
-                    Xóa
-                  </button>
+                {(userInfo.user.role === "ADMIN" || userInfo.user.role === "HOST") ? (
+                  <>
                   <HouseAdminModal
                     houseId={item.id}
+                    hostId={hostId}
                     fetchHouseList={fetchHouseList}
                     action={"edit"}
                   />
+                  </>
+                ) : null}
                 </>
               ),
             };
@@ -63,7 +63,7 @@ export default function HouseAdminPage() {
           console.log("gethouseList: ", err);
         });
     };
-    fetchHouseList();
+    fetchHouseList(userInfo.user.id);
   }, [currentPage]);
 
   // Table with Search
@@ -194,26 +194,26 @@ export default function HouseAdminPage() {
     },
     {
       title: "Tên Phòng",
-      dataIndex: "tenPhong",
-      key: "tenPhong",
-      ...getColumnSearchProps("tenPhong"),
+      dataIndex: "name",
+      key: "name",
+      ...getColumnSearchProps("name"),
     },
     {
-      title: "SL Khách",
-      dataIndex: "khach",
-      key: "khach",
-      ...getColumnSearchProps("khach"),
+      title: "Địa điểm",
+      dataIndex: "location",
+      key: "location",
+      ...getColumnSearchProps("location"),
     },
     {
       title: "Giá Tiền",
-      dataIndex: "giaTien",
-      key: "giaTien",
-      ...getColumnSearchProps("giaTien"),
+      dataIndex: "price",
+      key: "price",
+      ...getColumnSearchProps("price"),
     },
     {
       title: "Hình Ảnh",
-      dataIndex: "hinhAnh",
-      key: "hinhAnh",
+      dataIndex: "image",
+      key: "image",
     },
     {
       title: "Điều chỉnh",
@@ -224,7 +224,7 @@ export default function HouseAdminPage() {
 
   return (
     <div>
-      <HouseAdminModal houseId={null} action={"add"} />
+      <HouseAdminModal houseId={null} hostId={userInfo.user.id} action={"add"} />
       <Table
         columns={columnsHouse}
         dataSource={houseArr}
@@ -232,7 +232,7 @@ export default function HouseAdminPage() {
           current: currentPage,
           onChange: (page) => setCurrentPage(page),
           pageSize: 10,
-          total: totalRow,
+          total: totalCount,
         }}
       ></Table>
     </div>

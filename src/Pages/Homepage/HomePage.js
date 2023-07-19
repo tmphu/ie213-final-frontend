@@ -18,7 +18,7 @@ export default function HomePage() {
       .getLocation(1)
       .then((res) => {
         console.log('location: ', res);
-        setLocationArr(res.data.content);
+        setLocationArr(res.data.content.data);
       })
       .catch((err) => {
         console.log(err);

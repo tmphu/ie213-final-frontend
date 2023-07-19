@@ -1,39 +1,38 @@
-import { Button, Input, message, Space, Table, Tag } from "antd";
+import { Button, Input, message, Space, Table } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import React, { useEffect, useRef, useState } from "react";
-import { customerAdminService } from "../../services/admin/customerAdminService";
 import { setLoadingOff } from "../../redux/reducers/loadingReducer";
 import { store } from "../..";
-import CustomerAdminModal from "../../Component/Modal/CustomerAdminModal";
 import { useSelector } from 'react-redux';
+import { amenityService } from '../../services/admin/amenityService';
+import AmenityAdminModal from '../../Component/Modal/AmenityAdminModal';
 
-export default function CustomerAdminPage() {
+export default function AmenityAdminPage() {
   let userInfo = useSelector((state) => state.userReducer.userInfo);
-  const [customerArr, setCustomerArr] = useState([]);
+  const [amenityArr, setAmenityArr] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalRow, setTotalRow] = useState(1);
+  const [totalCount, setTotalCount] = useState(1);
 
   useEffect(() => {
-    let fetchCustomerList = () => {
-      customerAdminService
-        .getCustomerPagination(currentPage)
+    let fetchAmenityList = () => {
+      amenityService
+        .getAmenity(currentPage)
         .then((res) => {
           console.log('res', res);
-          setCustomerArr(res.data.content.data);
-          setTotalRow(res.data.content.totalCount);
-          let customerList = res.data.content.data.map((item, index) => {
+          setAmenityArr(res.data.content.data);
+          setTotalCount(res.data.content.totalCount);
+          let amenityList = res.data.content.data.map((item, index) => {
             return {
               ...item,
               key: index,
-              gender: item.gender === 'male' ? 'Nam' : 'Nữ',
               action: (
                 <>
                 {userInfo.user.role === "ADMIN" ? (
                   <>
-                  <CustomerAdminModal
-                    customerId={item.customer_id}
-                    fetchCustomerList={fetchCustomerList}
+                  <AmenityAdminModal
+                    amenityId={item.id}
+                    fetchAmenityList={fetchAmenityList}
                     action={"edit"}
                   />
                   </>
@@ -42,13 +41,13 @@ export default function CustomerAdminPage() {
               ),
             };
           });
-          setCustomerArr(customerList);
+          setAmenityArr(amenityList);
         })
         .catch((err) => {
-          console.log("getCustomerList: ", err);
+          console.log("getAmenityList: ", err);
         });
     };
-    fetchCustomerList();
+    fetchAmenityList();
   }, [currentPage]);
 
   // Table with Search
@@ -170,55 +169,24 @@ export default function CustomerAdminPage() {
       ),
   });
 
-  const columnsCustomer = [
+  const columnsAmenity = [
     {
       title: "ID",
-      dataIndex: "customer_id",
-      key: "customer_id",
-      ...getColumnSearchProps("customer_id"),
+      dataIndex: "id",
+      key: "id",
+      ...getColumnSearchProps("id"),
     },
     {
-      title: "Họ",
-      dataIndex: "last_name",
-      key: "last_name",
-      ...getColumnSearchProps("last_name"),
+      title: "Mã code",
+      dataIndex: "code",
+      key: "code",
+      ...getColumnSearchProps("code"),
     },
     {
-      title: "Tên",
-      dataIndex: "first_name",
-      key: "first_name",
-      ...getColumnSearchProps("first_name"),
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      ...getColumnSearchProps("email"),
-    },
-    {
-      title: "Phone",
-      dataIndex: "phone_number",
-      key: "phone_number",
-      ...getColumnSearchProps("phone_number"),
-    },
-    {
-      title: "Giới tính",
-      dataIndex: "gender",
-      key: "gender",
-      ...getColumnSearchProps("gender"),
-    },
-    {
-      title: "Loại Khách",
-      dataIndex: "role",
-      key: "role",
-      ...getColumnSearchProps("role"),
-      render: (text) => {
-        if (text === "ADMIN") {
-          return <Tag color="red">Quản Trị</Tag>;
-        } else {
-          return <Tag color="green">Khách Hàng</Tag>;
-        }
-      },
+      title: "Tên tiện nghi",
+      dataIndex: "name",
+      key: "name",
+      ...getColumnSearchProps("name"),
     },
     {
       title: "Điều chỉnh",
@@ -229,14 +197,15 @@ export default function CustomerAdminPage() {
 
   return (
     <div>
+      {(userInfo.user.role === "ADMIN") ? <AmenityAdminModal amenityId={null} action={"add"} /> : null}
       <Table
-        columns={columnsCustomer}
-        dataSource={customerArr}
+        columns={columnsAmenity}
+        dataSource={amenityArr}
         pagination={{
           current: currentPage,
           onChange: (page) => setCurrentPage(page),
           pageSize: 10,
-          total: totalRow,
+          total: totalCount,
         }}
       ></Table>
     </div>

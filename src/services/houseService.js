@@ -15,21 +15,22 @@ export const houseService = {
   getBookedHouse: (userId, currentPage = 1, pageSize = 10) => {
     return https.get(`/api/v1/booking/?userId=${userId}&pageSize=${pageSize}&currentPage=${currentPage}`);
   },
-
-  
-  addHouse: (house) => {
-    return https.post("/api/phong-thue", house);
-  },
-  getHousePagination: (currentPage) => {
+  getHousePagination: (hostId, currentPage = 1, pageSize = 10) => {
     return https.get(
-      `api/phong-thue/phan-trang-tim-kiem?pageIndex=${currentPage}&pageSize=10`
+      `/api/v1/house/host/${hostId}?&pageSize=${pageSize}&currentPage=${currentPage}`
     );
   },
+  updateHouse: (data) => {
+    return https.put(`/api/v1/house/${data.id}`, data);
+  },
+  addHouse: (data) => {
+    return https.post("/api/v1/house/", data);
+  },
+
+  
+  
   getCommentByHouseId: (houseId) => {
     return https.get(`/api/binh-luan/lay-binh-luan-theo-phong/${houseId}`);
-  },
-  editHouse: (house) => {
-    return https.put(`/api/phong-thue/${house.id}`, house);
   },
   deleteHouse: (houseId) => {
     return https.delete(`/api/phong-thue/${houseId}`);

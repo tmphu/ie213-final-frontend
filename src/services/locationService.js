@@ -6,18 +6,20 @@ export const locationService = {
       `/api/v1/location/?pageSize=${pageSize}&currentPage=${currentPage}`
     );
   },
-
-  addLocation: (location) => {
-    return https.post("/api/vi-tri", location);
+  getLocationById: (locationId) => {
+    return https.get(`/api/v1/location/${locationId}`);
   },
+  updateLocation: (location) => {
+    return https.put(`/api/v1/location/${location.id}`, location);
+  },
+  addLocation: (location) => {
+    return https.post("/api/v1/location/", location);
+  },
+
+
+
   getCityList: () => {
     return https.get("/api/vi-tri/");
-  },
-  getLocationById: (locationId) => {
-    return https.get(`/api/vi-tri/${locationId}`);
-  },
-  editLocation: (location) => {
-    return https.put(`/api/vi-tri/${location.id}`, location);
   },
   deleteLocation: (locationId) => {
     return https.delete(`/api/vi-tri/${locationId}`);

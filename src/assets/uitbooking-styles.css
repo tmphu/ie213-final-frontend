@@ -25,3 +25,7 @@
   .slick-next:hover {
     background-color: rgb(135,162,255) !important;
   }
+
+.ant-modal-footer .ant-btn-primary {
+  background-color: #1677ff;
+}

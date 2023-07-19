@@ -1,6 +1,6 @@
 import { Button, Modal, Form, Input, message } from "antd";
 import { useEffect, useState } from "react";
-import "./BookingAdminModal.css";
+import "../../assets/uitbooking-styles.css";
 import { bookingService } from "../../services/admin/bookingService";
 
 const BookingAdminModal = ({ bookingId, fetchBookingList, action }) => {

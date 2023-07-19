@@ -1,22 +1,22 @@
-import { Button, Modal, Form, Input, message } from "antd";
+import { Button, Modal, Form, Input, message, Select } from "antd";
 import { useEffect, useState } from "react";
 import { customerAdminService } from "../../services/admin/customerAdminService";
-import "./UserAdminModal.css";
+import "../../assets/uitbooking-styles.css";
 
-const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
-  const [userData, setUserData] = useState({});
+const CustomerAdminModal = ({ customerId, fetchCustomerList, action, isSelfEdit }) => {
+  const [customerData, setCustomerData] = useState({});
   useEffect(() => {
-    if (userId) {
+    if (customerId) {
       customerAdminService
-        .getUserById(userId)
+        .getCustomerById(customerId)
         .then((res) => {
-          setUserData(res.data.content);
+          setCustomerData(res.data.content);
         })
         .catch((err) => {
           console.log("getUserById err", err);
         });
     }
-  }, [userId]);
+  }, [customerId]);
 
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
@@ -27,13 +27,13 @@ const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
 
   // handle submit
   const onSubmit = (values) => {
-    if (userId) {
+    if (customerId) {
       customerAdminService
-        .editUser(values)
+        .updateCustomer(values)
         .then((res) => {
-          message.success("Sửa thông tin người dùng thành công!");
+          message.success("Sửa thông tin khách hàng thành công!");
           handleClose();
-          if (!isSelfEdit) fetchUserList();
+          if (!isSelfEdit) fetchCustomerList();
         })
         .catch((err) => {
           console.log("editUser err", err);
@@ -43,7 +43,7 @@ const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
       customerAdminService
         .addUser(values)
         .then((res) => {
-          message.success("Thêm người dùng thành công!");
+          message.success("Thêm khách hàng thành công!");
           handleClose();
           window.location.reload();
         })
@@ -75,7 +75,7 @@ const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
         title={
           isSelfEdit
             ? "Sửa thông tin cá nhân"
-            : userId
+            : customerId
             ? "Sửa thông tin người dùng"
             : "Thêm quản trị viên"
         }
@@ -92,9 +92,8 @@ const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
               form
                 .validateFields()
                 .then((values) => {
-                  values = userId
-                    ? { ...values, id: userData?.id, gender: true }
-                    : { ...values, gender: true };
+                  values = customerId ? { ...values, id: customerData?.customer_id } : { ...values };
+                  console.log('values', values);
                   onSubmit(values);
                 })
                 .catch((info) => {
@@ -111,16 +110,27 @@ const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
           layout="vertical"
           name="form_in_modal"
           initialValues={{
-            name: userData.name,
-            email: userData.email,
-            phone: userData.phone,
-            birthday: userData.birthday,
-            role: userId ? userData.role : "ADMIN",
+            last_name: customerData.last_name,
+            first_name: customerData.first_name,
+            phone_number: customerData.phone_number,
+            gender: customerData.gender,
           }}
         >
           <Form.Item
-            label="Họ Tên"
-            name="name"
+            label="Họ"
+            name="last_name"
+            rules={[
+              {
+                required: true,
+                message: "Họ không được để trống!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Tên"
+            name="first_name"
             rules={[
               {
                 required: true,
@@ -130,7 +140,8 @@ const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
           >
             <Input />
           </Form.Item>
-          <Form.Item
+          {!customerId && (
+            <Form.Item
             label="Email"
             name="email"
             rules={[
@@ -142,7 +153,8 @@ const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
           >
             <Input />
           </Form.Item>
-          {!userId && (
+          )}
+          {!customerId && (
             <Form.Item
               label="Mật Khẩu"
               name="password"
@@ -156,30 +168,21 @@ const UserAdminModal = ({ userId, fetchUserList, action, isSelfEdit }) => {
               <Input />
             </Form.Item>
           )}
-          <Form.Item label="Phone" name="phone">
+          <Form.Item label="Phone" name="phone_number">
             <Input />
           </Form.Item>
-          <Form.Item label="Birthday" name="birthday">
-            <Input />
-          </Form.Item>
-          {!isSelfEdit && (
-            <Form.Item
-              label="Role"
-              name="role"
-              rules={[
-                {
-                  required: true,
-                  message: "Email không được để trống!",
-                },
+          <Form.Item label="Giới tính" name="gender">
+            <Select
+              options={[
+                { value: 'male', label: 'Nam' },
+                { value: 'female', label: 'Nữ' },
               ]}
-            >
-              <Input />
-            </Form.Item>
-          )}
+            />
+          </Form.Item>
         </Form>
       </Modal>
     </>
   );
 };
 
-export default UserAdminModal;
+export default CustomerAdminModal;
