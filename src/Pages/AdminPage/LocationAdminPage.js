@@ -29,7 +29,7 @@ export default function LocationAdminPage() {
               image: <img src={item.image} alt="" className="h-10" />,
               action: (
                 <>
-                {userInfo.user.role === "ADMIN" ? (
+                {["ADMIN", "HOST"].includes(userInfo.user.role) ? (
                   <>
                   <LocationAdminModal
                     locationId={item.id}
@@ -204,7 +204,7 @@ export default function LocationAdminPage() {
 
   return (
     <div>
-      {(userInfo.user.role === "ADMIN") ? <LocationAdminModal locationId={null} action={"add"} /> : null}
+      {(["ADMIN", "HOST"].includes(userInfo.user.role)) ? <LocationAdminModal locationId={null} action={"add"} /> : null}
       <Table
         columns={columnsLocation}
         dataSource={locationArr}

@@ -1,4 +1,4 @@
-import { Button, Modal, Form, Input, message } from "antd";
+import { Button, Modal, Form, Input, message, InputNumber } from "antd";
 import { useEffect, useState } from "react";
 import "../../assets/uitbooking-styles.css";
 import { bookingService } from "../../services/admin/bookingService";
@@ -22,7 +22,6 @@ const BookingAdminModal = ({ bookingId, fetchBookingList, action }) => {
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
-    window.location.reload();
   };
 
   // handle submit
@@ -58,58 +57,80 @@ const BookingAdminModal = ({ bookingId, fetchBookingList, action }) => {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="mx-1 px-2 py-1 rounded bg-orange-500 text-white"
+        className="mx-1 px-2 py-1 rounded bg-blue-500 text-white"
       >
-        {action === "edit" ? "Sửa" : "Thêm đặt phòng"}
+        {action === "view" ? "Chi tiết" : "Thêm đặt phòng"}
       </button>
       <Modal
-        title={bookingId ? "Sửa thông tin đặt phòng" : "Thêm đặt phòng"}
+        width={840}
+        title={bookingId ? "Xem thông tin đặt phòng" : "Thêm đặt phòng"}
         open={open}
         onCancel={handleClose}
         footer={[
-          <Button key="cancel" onClick={handleClose}>
-            Cancel
+          <Button key="close" onClick={handleClose}>
+            Close
           </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            onClick={() => {
-              form
-                .validateFields()
-                .then((values) => {
-                  values = bookingId
-                    ? { ...values, id: bookingData?.id }
-                    : { ...values };
-                  onSubmit(values);
-                })
-                .catch((info) => {
-                  console.log("Validate Failed:", info);
-                });
-            }}
-          >
-            Submit
-          </Button>,
+          // <Button key="cancel" onClick={handleClose}>
+          //   Cancel
+          // </Button>,
+          // <Button
+          //   key="submit"
+          //   type="primary"
+          //   onClick={() => {
+          //     form
+          //       .validateFields()
+          //       .then((values) => {
+          //         values = bookingId
+          //           ? { ...values, id: bookingData?.id }
+          //           : { ...values };
+          //         onSubmit(values);
+          //       })
+          //       .catch((info) => {
+          //         console.log("Validate Failed:", info);
+          //       });
+          //   }}
+          // >
+          //   Submit
+          // </Button>,
         ]}
       >
         <Form
           form={form}
+          disabled={true}
           layout="vertical"
           name="form_in_modal"
           initialValues={{
-            maPhong: bookingData.maPhong,
-            ngayDen: bookingData.ngayDen,
-            ngayDi: bookingData.ngayDi,
-            soLuongKhach: bookingData.soLuongKhach,
-            maNguoiDung: bookingData.maNguoiDung,
+            name: bookingData.house?.name,
+            check_in_date: bookingData.check_in_date,
+            check_out_date: bookingData.check_out_date,
+            guest_number: bookingData.guest_number,
+            customer_name: `${bookingData.user?.last_name} ${bookingData.user?.first_name}`,
+            code: bookingData.code,
+            total_price: bookingData.total_price,
+            payment_method: bookingData.payment_method,
           }}
         >
           <Form.Item
-            label="Mã Phòng"
-            name="maPhong"
+            label="Tên Phòng"
+            name="name"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
             rules={[
               {
                 required: true,
-                message: "Mã phòng không được để trống!",
+                message: "Tên phòng không được để trống!",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Tên khách hàng"
+            name="customer_name"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 0 0 16px' }}
+            rules={[
+              {
+                required: true,
+                message: "Tên khách hàng không được để trống!",
               },
             ]}
           >
@@ -117,7 +138,8 @@ const BookingAdminModal = ({ bookingId, fetchBookingList, action }) => {
           </Form.Item>
           <Form.Item
             label="Ngày đến"
-            name="ngayDen"
+            name="check_in_date"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
             rules={[
               {
                 required: true,
@@ -129,7 +151,8 @@ const BookingAdminModal = ({ bookingId, fetchBookingList, action }) => {
           </Form.Item>
           <Form.Item
             label="Ngày đi"
-            name="ngayDi"
+            name="check_out_date"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 0 0 16px' }}
             rules={[
               {
                 required: true,
@@ -141,7 +164,8 @@ const BookingAdminModal = ({ bookingId, fetchBookingList, action }) => {
           </Form.Item>
           <Form.Item
             label="SL khách"
-            name="soLuongKhach"
+            name="guest_number"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
             rules={[
               {
                 required: true,
@@ -152,14 +176,23 @@ const BookingAdminModal = ({ bookingId, fetchBookingList, action }) => {
             <Input />
           </Form.Item>
           <Form.Item
-            label="Mã khách hàng"
-            name="maNguoiDung"
-            rules={[
-              {
-                required: true,
-                message: "Mã khách hàng không được để trống!",
-              },
-            ]}
+            label="Mã đặt phòng"
+            name="code"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 0 0 16px' }}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Tổng cộng"
+            name="total_price"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
+          >
+            <Input prefix='VNĐ' />
+          </Form.Item>
+          <Form.Item
+            label="Phương thức thanh toán"
+            name="payment_method"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 0 0 16px' }}
           >
             <Input />
           </Form.Item>

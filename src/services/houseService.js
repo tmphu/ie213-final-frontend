@@ -9,9 +9,6 @@ export const houseService = {
   getHouseById: (id) => {
     return https.get(`/api/v1/house/details/${id}`);
   },
-  bookHouse: (data) => {
-    return https.post("/api/v1/booking/", data);
-  },
   getBookedHouse: (userId, currentPage = 1, pageSize = 10) => {
     return https.get(`/api/v1/booking/?userId=${userId}&pageSize=${pageSize}&currentPage=${currentPage}`);
   },
@@ -31,8 +28,5 @@ export const houseService = {
   
   getCommentByHouseId: (houseId) => {
     return https.get(`/api/binh-luan/lay-binh-luan-theo-phong/${houseId}`);
-  },
-  deleteHouse: (houseId) => {
-    return https.delete(`/api/phong-thue/${houseId}`);
   },
 };

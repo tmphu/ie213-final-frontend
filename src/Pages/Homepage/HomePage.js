@@ -17,7 +17,6 @@ export default function HomePage() {
     locationService
       .getLocation(1)
       .then((res) => {
-        console.log('location: ', res);
         setLocationArr(res.data.content.data);
       })
       .catch((err) => {

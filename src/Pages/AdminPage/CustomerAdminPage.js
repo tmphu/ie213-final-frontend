@@ -29,15 +29,11 @@ export default function CustomerAdminPage() {
               gender: item.gender === 'male' ? 'Nam' : 'Nữ',
               action: (
                 <>
-                {userInfo.user.role === "ADMIN" ? (
-                  <>
-                  <CustomerAdminModal
-                    customerId={item.customer_id}
-                    fetchCustomerList={fetchCustomerList}
-                    action={"edit"}
-                  />
-                  </>
-                ) : null}
+                <CustomerAdminModal
+                  customerId={item.customer_id}
+                  fetchCustomerList={fetchCustomerList}
+                  action={"view"}
+                />
                 </>
               ),
             };

@@ -14,6 +14,7 @@ import LocationAdminPage from "./Pages/AdminPage/LocationAdminPage";
 import HouseAdminPage from "./Pages/AdminPage/HouseAdminPage";
 import BookingAdminPage from "./Pages/AdminPage/BookingAdminPage";
 import AmenityAdminPage from './Pages/AdminPage/AmenityAdminPage';
+import Payment from './Pages/Payment/Payment';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/location/:id" element={<Layout><LocationPage /></Layout>} />
           <Route path="/house/details/:id" element={<Layout><DetailPage /></Layout>} />
           <Route path="/my-profile" element={<Layout><MyProfile /></Layout>} />
+          <Route path="/payment" element={<Layout><Payment /></Layout>} />
           <Route path="/admin">
             <Route path="customer" element={<AdminLayout><CustomerAdminPage /></AdminLayout>} />
             <Route path="location" element={<AdminLayout><LocationAdminPage /></AdminLayout>} />

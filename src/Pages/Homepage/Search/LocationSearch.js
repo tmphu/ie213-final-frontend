@@ -57,12 +57,13 @@ function LocationSearch({ locationArr }) {
     setValue(item);
     setIsDropdownVisible(false);
     dispatch(setLocationInfo(locationInfo));
+    console.log('locationinfo', locationInfo);
   };
 
   return (
     <div className="relative overflow-visible">
       <InputField
-        className="border-0 p-0 m-0 focus:border-0 focus:outline-0 focus:ring-0"
+        className="border-0 p-0 m-0 focus:border-0 focus:outline-0 focus:ring-0 w-full"
         type="text"
         placeholder="Bạn sắp đi đâu?"
         value={value}

@@ -43,7 +43,7 @@ export default function HouseAdminPage() {
               price: <span>{currencyFormat.format(item.price)}</span>,
               action: (
                 <>
-                {(userInfo.user.role === "ADMIN" || userInfo.user.role === "HOST") ? (
+                {["ADMIN", "HOST"].includes(userInfo.user.role) ? (
                   <>
                   <HouseAdminModal
                     houseId={item.id}
@@ -224,7 +224,7 @@ export default function HouseAdminPage() {
 
   return (
     <div>
-      <HouseAdminModal houseId={null} hostId={userInfo.user.id} action={"add"} />
+      {(["ADMIN", "HOST"].includes(userInfo.user.role)) ? <HouseAdminModal houseId={null} hostId={userInfo.user.id} action={"add"} /> : null}
       <Table
         columns={columnsHouse}
         dataSource={houseArr}

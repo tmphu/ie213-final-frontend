@@ -1,19 +1,18 @@
 import { https } from "../configURL";
 
 export const bookingService = {
-  addBooking: (booking) => {
-    return https.post("/api/dat-phong", booking);
-  },
-  getBookings: () => {
-    return https.get("/api/dat-phong");
+  getBookings: (hostId, currentPage = 1, pageSize = 10) => {
+    return https.get(
+      `/api/v1/booking/host/${hostId}?pageSize=${pageSize}&currentPage=${currentPage}`
+    );
   },
   getBookingById: (bookingId) => {
-    return https.get(`/api/dat-phong/${bookingId}`);
+    return https.get(`/api/v1/booking/details/${bookingId}`);
   },
-  editBooking: (booking) => {
-    return https.put(`/api/dat-phong/${booking.id}`, booking);
+  createBooking: (data) => {
+    return https.post("/api/v1/booking/", data);
   },
-  deleteBooking: (bookingId) => {
-    return https.delete(`/api/dat-phong/${bookingId}`);
+  createPaymentTransaction: (data) => {
+    return https.post("/api/v1/booking/payment", data);
   },
 };

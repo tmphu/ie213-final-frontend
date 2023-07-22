@@ -6,8 +6,10 @@ import { setLoadingOff } from "../../redux/reducers/loadingReducer";
 import { store } from "../..";
 import BookingAdminModal from "../../Component/Modal/BookingAdminModal";
 import { bookingService } from "../../services/admin/bookingService";
+import { useSelector } from 'react-redux';
 
 export default function BookingAdminPage() {
+  let userInfo = useSelector((state) => state.userReducer.userInfo);
   const [bookingArr, setBookingArr] = useState([]);
 
   useEffect(() => {
@@ -24,29 +26,23 @@ export default function BookingAdminPage() {
         });
     };
 
-    let fetchBookingList = () => {
+    let fetchBookingList = (hostId) => {
       bookingService
-        .getBookings()
+        .getBookings(hostId)
         .then((res) => {
-          setBookingArr(res.data.content);
-          let bookingList = res.data.content.map((item, index) => {
+          setBookingArr(res.data.content.data);
+          let bookingList = res.data.content.data.map((item, index) => {
             return {
               ...item,
               key: index,
+              house_name: item.house.name,
+              customer_name: `${item.user.last_name} ${item.user.first_name}`,
               action: (
                 <>
-                  <button
-                    onClick={() => {
-                      handleDeleteBooking(item.id);
-                    }}
-                    className="mx-1 px-2 py-1 rounded bg-red-700 text-white"
-                  >
-                    Xóa
-                  </button>
                   <BookingAdminModal
                     bookingId={item.id}
                     fetchBookingList={fetchBookingList}
-                    action={"edit"}
+                    action={"view"}
                   />
                 </>
               ),
@@ -58,7 +54,7 @@ export default function BookingAdminPage() {
           console.log("getBookingList: ", err);
         });
     };
-    fetchBookingList();
+    fetchBookingList(userInfo.user.id);
   }, []);
 
   // Table with Search
@@ -188,32 +184,32 @@ export default function BookingAdminPage() {
       ...getColumnSearchProps("id"),
     },
     {
-      title: "Mã Phòng",
-      dataIndex: "maPhong",
-      key: "maPhong",
-      ...getColumnSearchProps("maPhong"),
+      title: "Tên Phòng",
+      dataIndex: "house_name",
+      key: "house_name",
+      ...getColumnSearchProps("house_name"),
     },
     {
       title: "Ngày Đến",
-      dataIndex: "ngayDen",
-      key: "ngayDen",
-      ...getColumnSearchProps("ngayDen"),
+      dataIndex: "check_in_date",
+      key: "check_in_date",
+      ...getColumnSearchProps("check_in_date"),
     },
     {
       title: "Ngày Đi",
-      dataIndex: "ngayDi",
-      key: "ngayDi",
-      ...getColumnSearchProps("ngayDi"),
+      dataIndex: "check_out_date",
+      key: "check_out_date",
+      ...getColumnSearchProps("check_out_date"),
     },
     {
       title: "SL Khách",
-      dataIndex: "soLuongKhach",
-      key: "soLuongKhach",
+      dataIndex: "guest_number",
+      key: "guest_number",
     },
     {
-      title: "Mã Khách Hàng",
-      dataIndex: "maNguoiDung",
-      key: "maNguoiDung",
+      title: "Khách Hàng",
+      dataIndex: "customer_name",
+      key: "customer_name",
     },
     {
       title: "Điều chỉnh",
@@ -224,7 +220,6 @@ export default function BookingAdminPage() {
 
   return (
     <div>
-      <BookingAdminModal bookingId={null} action={"add"} />
       <Table columns={columnsBooking} dataSource={bookingArr}></Table>
     </div>
   );

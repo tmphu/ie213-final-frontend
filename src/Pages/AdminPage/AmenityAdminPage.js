@@ -28,7 +28,7 @@ export default function AmenityAdminPage() {
               key: index,
               action: (
                 <>
-                {userInfo.user.role === "ADMIN" ? (
+                {["ADMIN", "HOST"].includes(userInfo.user.role) ? (
                   <>
                   <AmenityAdminModal
                     amenityId={item.id}
@@ -197,7 +197,7 @@ export default function AmenityAdminPage() {
 
   return (
     <div>
-      {(userInfo.user.role === "ADMIN") ? <AmenityAdminModal amenityId={null} action={"add"} /> : null}
+      {(["ADMIN", "HOST"].includes(userInfo.user.role)) ? <AmenityAdminModal amenityId={null} action={"add"} /> : null}
       <Table
         columns={columnsAmenity}
         dataSource={amenityArr}

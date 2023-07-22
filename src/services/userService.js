@@ -3,11 +3,14 @@ import { BASE_URL, https } from "./configURL";
 import { userLocalService } from "./localStorageService";
 
 export const userService = {
-  postLogin: (dataUser) => {
-    return https.post(`/api/v1/auth/login`, dataUser);
+  postLogin: (payload) => {
+    return https.post(`/api/v1/auth/login`, payload);
   },
-  postSignup: (dataUser) => {
-    return https.post(`/api/v1/auth/signup`, dataUser);
+  signUpCustomer: (payload) => {
+    return https.post(`/api/v1/auth/signup`, payload);
+  },
+  signUpHost: (payload) => {
+    return https.post(`/api/v1/host/`, payload);
   },
 
   uploadAvatar: (formData) => {

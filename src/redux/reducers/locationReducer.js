@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  locationInfo: null,
+  locationInfo: {},
+  searchLocation: {},
 };
 
 const locationReducer = createSlice({
@@ -11,9 +12,12 @@ const locationReducer = createSlice({
     setLocationInfo: (state, action) => {
       state.locationInfo = action.payload;
     },
+    setSearchLocation: (state, action) => {
+      state.searchLocation = action.payload;
+    },
   },
 });
 
-export const { setLocationInfo } = locationReducer.actions;
+export const { setLocationInfo, setSearchLocation } = locationReducer.actions;
 
 export default locationReducer.reducer;

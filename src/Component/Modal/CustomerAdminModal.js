@@ -22,7 +22,6 @@ const CustomerAdminModal = ({ customerId, fetchCustomerList, action, isSelfEdit 
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
-    window.location.reload();
   };
 
   // handle submit
@@ -66,22 +65,29 @@ const CustomerAdminModal = ({ customerId, fetchCustomerList, action, isSelfEdit 
       ) : (
         <button
           onClick={() => setOpen(true)}
-          className="mx-1 px-2 py-1 rounded bg-orange-500 text-white"
+          className="mx-1 px-2 py-1 rounded bg-blue-500 text-white"
         >
-          {action === "edit" ? "Sửa" : "Thêm quản trị viên"}
+          {action === "view" ? "Chi tiết" : "Thêm quản trị viên"}
         </button>
       )}
       <Modal
+        width={840}
         title={
           isSelfEdit
             ? "Sửa thông tin cá nhân"
             : customerId
-            ? "Sửa thông tin người dùng"
+            ? "Chi tiết thông tin người dùng"
             : "Thêm quản trị viên"
         }
         open={open}
         onCancel={handleClose}
-        footer={[
+        footer={customerId 
+          ? [
+          <Button key="close" onClick={handleClose}>
+            Close
+          </Button>,
+          ] 
+          : [
           <Button key="cancel" onClick={handleClose}>
             Cancel
           </Button>,
@@ -108,17 +114,20 @@ const CustomerAdminModal = ({ customerId, fetchCustomerList, action, isSelfEdit 
         <Form
           form={form}
           layout="vertical"
+          disabled={true}
           name="form_in_modal"
           initialValues={{
             last_name: customerData.last_name,
             first_name: customerData.first_name,
             phone_number: customerData.phone_number,
+            email: customerData.email,
             gender: customerData.gender,
           }}
         >
           <Form.Item
             label="Họ"
             name="last_name"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
             rules={[
               {
                 required: true,
@@ -131,6 +140,7 @@ const CustomerAdminModal = ({ customerId, fetchCustomerList, action, isSelfEdit 
           <Form.Item
             label="Tên"
             name="first_name"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 0 0 16px' }}
             rules={[
               {
                 required: true,
@@ -144,6 +154,7 @@ const CustomerAdminModal = ({ customerId, fetchCustomerList, action, isSelfEdit 
             <Form.Item
             label="Email"
             name="email"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
             rules={[
               {
                 required: true,
@@ -158,6 +169,7 @@ const CustomerAdminModal = ({ customerId, fetchCustomerList, action, isSelfEdit 
             <Form.Item
               label="Mật Khẩu"
               name="password"
+              style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 0 0 16px' }}
               rules={[
                 {
                   required: true,
@@ -168,10 +180,25 @@ const CustomerAdminModal = ({ customerId, fetchCustomerList, action, isSelfEdit 
               <Input />
             </Form.Item>
           )}
-          <Form.Item label="Phone" name="phone_number">
+          <Form.Item 
+            label="Phone"
+            name="phone_number"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Giới tính" name="gender">
+          <Form.Item 
+            label="Email"
+            name="email"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 0 0 16px' }}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Giới tính"
+            name="gender"
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
+          >
             <Select
               options={[
                 { value: 'male', label: 'Nam' },

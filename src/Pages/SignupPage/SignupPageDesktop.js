@@ -41,12 +41,13 @@ export default function SignupPageDesktop() {
   let navigate = useNavigate();
   let dispatch = useDispatch();
   const onFinish = (dataUser) => {
-    userService
-      .postSignup({ ...dataUser, role: "USER" })
+    if (dataUser.role === 'customer') {
+      userService
+      .signUpCustomer({ ...dataUser })
       .then((res) => {
         dispatch(setUserRegisterInfo(res.data.content));
         message.success(
-          "Tạo tài khoản thành công! Vui lòng đăng nhập bằng tài khoản vừa tạo"
+          "Tạo tài khoản khách hàng thành công! Vui lòng đăng nhập bằng tài khoản vừa tạo"
         );
         setTimeout(() => {
           navigate("/login");
@@ -56,6 +57,24 @@ export default function SignupPageDesktop() {
         console.log(err);
         message.error("Đăng ký thất bại!");
       });
+    } else if (dataUser.role === 'host') {
+      userService
+      .signUpHost({ ...dataUser })
+      .then((res) => {
+        dispatch(setUserRegisterInfo(res.data.content));
+        message.success(
+          "Tạo tài khoản chủ nhà thành công! Vui lòng đăng nhập bằng tài khoản vừa tạo"
+        );
+        setTimeout(() => {
+          navigate("/login");
+        });
+      }, 1000)
+      .catch((err) => {
+        console.log(err);
+        message.error("Đăng ký thất bại!");
+      });
+    }
+    
   };
   const handleRenderSignupForm = () => {
     return (
@@ -65,7 +84,9 @@ export default function SignupPageDesktop() {
         name="register"
         label="register"
         onFinish={onFinish}
-        initialValues={{}}
+        initialValues={{
+          role: 'customer',
+        }}
         scrollToFirstError
       >
         <Form.Item>
@@ -145,10 +166,23 @@ export default function SignupPageDesktop() {
           label="Giới tính"
         >
           <Select
-            style={{ width: '10rem' }}
+            style={{ width: '12rem' }}
             options={[
               { value: 'male', label: 'Nam' },
               { value: 'female', label: 'Nữ' },
+            ]}
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="role"
+          label="Phân quyền"
+        >
+          <Select
+            style={{ width: '12rem' }}
+            options={[
+              { value: 'customer', label: 'Khách hàng' },
+              { value: 'host', label: 'Chủ nhà' },
             ]}
           />
         </Form.Item>

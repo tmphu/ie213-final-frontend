@@ -13,7 +13,7 @@ import {
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import Comment from "../../Component/Comment/Comment";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./DetailPage.css";
@@ -21,11 +21,15 @@ import { addDays } from "date-fns";
 import { message } from "antd";
 import { currencyFormat } from '../../helper/currency';
 import moment from 'moment';
+import { paymentService } from '../../services/paymentService';
+import { bookingService } from '../../services/admin/bookingService';
+import { setBookingInfo } from '../../redux/reducers/bookingReducer';
 
 export default function DetailPage() {
-  let userInfo = useSelector((state) => state.userReducer.userInfo);
-  let { id } = useParams();
-  let navigate = useNavigate();
+  const userInfo = useSelector((state) => state.userReducer.userInfo);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [house, setHouse] = React.useState({});
   const [houseComment, setHouseComment] = React.useState([]);
   const [startDate, setStartDate] = useState(new Date());
@@ -65,27 +69,47 @@ export default function DetailPage() {
     }
   }
 
-  const bookHouse = (startDate, endDate, guestNo, userId) => {
-    console.log('userInfo', userInfo);
-    const data = {
-      house_id: parseInt(id),
-      check_in_date: moment(startDate).format('YYYY-MM-DD'),
-      check_out_date: moment(endDate).format('YYYY-MM-DD'),
-      guest_number: guestNo,
-      user_id: userId,
-    };
-    console.log("bookHouse data", data);
+  const handlePayment = async (orderCode, amount) => {
+    const payload = {
+      partner: 'VNPAY',
+      paymentAmount: amount * 100,
+      orderNumber: orderCode,
+    }
+    console.log("handlePayment payload", payload);
 
-    houseService
-      .bookHouse(data)
+    await paymentService.getPaymentUrl(payload)
       .then((res) => {
-        // setTimeout(() => {
-        //   navigate("/my-profile");
-        // }, 1000);
-        console.log('res', res);
+        setTimeout(() => {
+          console.log('getPaymentUrl', res);
+          console.log('url', res.data.data.url);
+          window.location.replace(res.data.data.url);
+        }, 1000)
       })
       .catch((err) => {
-        console.log("bookHouse error", err);
+        console.log('getPaymentUrl error', err);
+      })
+  }
+
+  const handleBooking = async (checkInDate, checkOutDate, guestNo, customerId) => {
+    const payload = {
+      house_id: parseInt(id),
+      check_in_date: moment(checkInDate).format('YYYY-MM-DD'),
+      check_out_date: moment(checkOutDate).format('YYYY-MM-DD'),
+      guest_number: guestNo,
+      user_id: customerId,
+      payment_method: 'vnpay',
+    };
+    console.log("handleBooking payload", payload);
+
+    await bookingService
+      .createBooking(payload)
+      .then(async (res) => {
+        console.log('createBooking', res);
+        dispatch(setBookingInfo(res.data.content));
+        await handlePayment(res.data.content?.code, res.data.content?.total_price);
+      })
+      .catch((err) => {
+        console.log("createBooking error", err);
       });
   };
 
@@ -127,7 +151,7 @@ export default function DetailPage() {
           <div id="house__name" className="flex flex-row gap-6 pb-6 justify-between">
             <div>
               <h3 className="mb-2 text-xl font-bold text-gray-800">
-                Toàn bộ căn hộ condo
+                Toàn bộ thông tin phòng
               </h3>
               <p>{amenities}</p>
             </div>
@@ -240,6 +264,7 @@ export default function DetailPage() {
                   <input
                     name="guestNo"
                     type="text"
+                    className='w-20 border-0'
                     value={guestNo}
                     onChange={(event) => setGuestNo(event.target.value)}
                   />
@@ -247,9 +272,9 @@ export default function DetailPage() {
               </div>
               <div
                 className="bg-pink-500 px-6 py-2 rounded-md text-white text-center font-bold cursor-pointer mb-3"
-                onClick={() => {
+                onClick={async () => {
                   if (userInfo) {
-                    bookHouse(startDate, endDate, guestNo, userInfo.user.id);
+                    await handleBooking(startDate, endDate, guestNo, userInfo.user.id)
                   } else {
                     message.error("Bạn cần đăng nhập để đặt phòng");
                     setTimeout(() => {

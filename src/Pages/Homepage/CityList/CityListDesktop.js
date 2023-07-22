@@ -7,7 +7,7 @@ export default function CityListDesktop({ locationArr }) {
       return (
         <HorizontalCityItem
           photo={item.image}
-          name={item.city}
+          name={item.location}
           key={index}
         />
       );
