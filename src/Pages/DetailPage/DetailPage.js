@@ -72,7 +72,7 @@ export default function DetailPage() {
   const handlePayment = async (orderCode, amount) => {
     const payload = {
       partner: 'VNPAY',
-      paymentAmount: amount * 100,
+      paymentAmount: amount,
       orderNumber: orderCode,
     }
     console.log("handlePayment payload", payload);
@@ -104,8 +104,6 @@ export default function DetailPage() {
     await bookingService
       .createBooking(payload)
       .then(async (res) => {
-        console.log('createBooking', res);
-        dispatch(setBookingInfo(res.data.content));
         await handlePayment(res.data.content?.code, res.data.content?.total_price);
       })
       .catch((err) => {

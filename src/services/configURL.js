@@ -31,6 +31,10 @@ https.interceptors.request.use(
 https.interceptors.response.use(
   function (response) {
     store.dispatch(setLoadingOff());
+    const isError = response.data && response.data.statusCode >= 400 && response.data.statusCode < 500;
+    if (isError) {
+      return Promise.reject(response.data);
+    }
     return response;
   },
   function (error) {

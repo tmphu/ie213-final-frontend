@@ -9,6 +9,9 @@ export const bookingService = {
   getBookingById: (bookingId) => {
     return https.get(`/api/v1/booking/details/${bookingId}`);
   },
+  getBookingByCode: (bookingCode) => {
+    return https.get(`/api/v1/booking/details/code/${bookingCode}`);
+  },
   createBooking: (data) => {
     return https.post("/api/v1/booking/", data);
   },

@@ -27,7 +27,7 @@ export default function LoginPageDesktop() {
         }, 1000);
       })
       .catch((err) => {
-        console.log(err);
+        console.log('err', err);
         message.error(
           "Thông tin đăng nhập không đúng, vui lòng kiểm tra lại username/password"
         );

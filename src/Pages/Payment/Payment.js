@@ -6,13 +6,23 @@ import { useSelector } from 'react-redux';
 
 export default function Payment() {
   const navigate = useNavigate();
-  const bookingInfo = useSelector((state) => state.bookingReducer?.bookingInfo);
   const [searchParams] = useSearchParams();
   const [successPage, setSuccessPage] = useState(false);
+  const [bookingInfo, setBookingInfo] = useState({});
   
-  const handlePayment = (result) => {
+  const getBookingInfo = (code) => {
+    bookingService.getBookingByCode(code)
+      .then((res) => {
+        setBookingInfo(res.data.content);
+      })
+      .catch((err) => {
+        console.log('getBookingInfo error: ', err);
+      })
+  }
+
+  const handlePayment = async (result) => {
     const payload = {
-      booking_id: 1,
+      booking_id: result.id,
       ref: result.vnp_TxnRef,
       amount: result.vnp_Amount,
       payment_date: result.vnp_PayDate,
@@ -20,10 +30,11 @@ export default function Payment() {
       payment_gateway: `VNPAY - ${result.vnp_BankCode} - ${result.vnp_CardType}`,
       transaction_no: result.vnp_TransactionNo,
     }
-    bookingService.createPaymentTransaction(payload)
+    await bookingService.createPaymentTransaction(payload)
       .then((res) => {
         setSuccessPage(result.isSuccess)
-      }).catch((err) => {
+      })
+      .catch((err) => {
         setSuccessPage(false)
         console.log('createPaymentTransaction error:', err);
       });
@@ -32,8 +43,11 @@ export default function Payment() {
   useEffect(() => {
     const paymentResult = Object.fromEntries([...searchParams]);
     console.log('paymentResult', paymentResult);
-    const isSuccess = paymentResult.vnp_ResponseCode === '00' && paymentResult.vnp_TransactionStatus === '00';;
-    handlePayment({...paymentResult, isSuccess});
+    const isSuccess = paymentResult.vnp_ResponseCode === '00' && paymentResult.vnp_TransactionStatus === '00';
+    getBookingInfo(paymentResult.vnp_OrderInfo?.slice(-10));
+    if (bookingInfo) {
+      handlePayment({...paymentResult, isSuccess, bookingInfo});
+    }
   }, [])
   
   return (successPage ? (
